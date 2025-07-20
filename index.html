@@ -12,44 +12,50 @@
 </head>
 
 <body>
-    <div class="container py-5">
-        <form class="bg-orange rounded-4 shadow p-4 mx-auto" id="ditehubForm" style="max-width: 540px;" autocomplete="off">
+    <div class="container p-5">
+        <form class="card bg-orange rounded-4 shadow p-4 mx-auto" id="ditehubForm" style="max-width: 540px;"
+            autocomplete="off">
             <div class="text-center mb-4">
-                <img src="https://images.wuzzuf-data.net/files/company_logo/62521695464a1af2212b39.png" alt="Sales Form Logo" class="mb-3 rounded-3" style="height: 96px;">
+                <img src="https://images.wuzzuf-data.net/files/company_logo/62521695464a1af2212b39.png"
+                    alt="Sales Form Logo" class="mb-1 rounded-3" style="height: 96px;" draggable="false">
                 <h1 class="h3 fw-bold">Sales Form</h1>
             </div>
-            <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label for="first-name" class="form-label">First Name</label>
-                    <input type="text" id="first-name" name="first-name" class="form-control" required placeholder="First Name">
-                </div>
-                <div class="col-md-6">
-                    <label for="last-name" class="form-label">Last Name <span class="text-muted small">(optional)</span></label>
-                    <input type="text" id="last-name" name="last-name" class="form-control" placeholder="Last Name">
+            <div class="col-auto">
+                <label for="phone" class="form-label">Phone</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-dark">+20</span>
+                    <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10" minlength="10"
+                        required placeholder="10 digits" class="form-control">
                 </div>
             </div>
-            <div class="row g-3 mb-3 align-items-end">
-                <div class="col-auto">
-                    <label for="phone" class="form-label">Phone</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light text-dark">+20</span>
-                        <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10" minlength="10" required placeholder="10 digits" class="form-control">
+            <div class="row g-3 mb-1 align-items-end">
+                <div class="row g-3 mb-1">
+                    <div class="col-md-6">
+                        <label for="first-name" class="form-label">First Name</label>
+                        <input type="text" id="first-name" name="first-name" class="form-control" required
+                            placeholder="First Name">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="last-name" class="form-label">Last Name <span
+                                class="text-muted small">(optional)</span></label>
+                        <input type="text" id="last-name" name="last-name" class="form-control" placeholder="Last Name">
                     </div>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="booking-date" class="form-label">Booking Date</label>
                 <input type="date" id="booking-date" name="booking-date" class="form-control" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="booking-time" class="form-label">Booking Time</label>
                 <input type="time" id="booking-time" name="booking-time" class="form-control" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label class="form-label">Deal Type</label>
                 <div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="deal-type" id="deal-online" value="online" required>
+                        <input class="form-check-input" type="radio" name="deal-type" id="deal-online" value="online"
+                            required>
                         <label class="form-check-label" for="deal-online">Online Deal</label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -58,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="source" class="form-label">Source</label>
                 <select id="source" name="source" class="form-select" required>
                     <option value="">Choose source</option>
@@ -67,9 +73,10 @@
                     <option value="Other">Other</option>
                 </select>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="comment" class="form-label">Comment <span class="text-muted small">(optional)</span></label>
-                <textarea id="comment" name="comment" rows="4" class="form-control" placeholder="Add a comment..."></textarea>
+                <textarea id="comment" name="comment" rows="4" class="form-control"
+                    placeholder="Add a comment..."></textarea>
             </div>
             <button type="submit" class="btn btn-orange w-100 fw-bold">Submit</button>
         </form>
