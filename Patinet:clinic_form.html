@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuture Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /* Custom styles for the simplified blue theme */
+        :root {
+            --deep-blue: #2a36a6;
+            --light-blue: #5e7bfa;
+            --light-blue-shadow: rgba(94, 123, 250, 0.25);
+        }
+
+        body {
+            /* A clean, light gray background */
+            background-color: #f8fafc; 
+            padding: 3rem 0; /* Add vertical padding for spacing */
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto; /* Center the container horizontally */
+        }
+
+        .logo-container {
+            margin-bottom: 2.5rem; 
+        }
+
+        .logo-container img {
+            height: 52px; 
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1)); 
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            border: 1px solid #d1d5db; 
+            padding: 3rem; 
+            border-radius: 1rem; 
+            margin-top: 2.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); 
+            transition: all 0.3s ease-in-out;
+            border-top: 5px solid var(--light-blue);
+        }
+
+        .btn-selector {
+            border: 1px solid #ced4da;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .btn-selector.active {
+            background-color: var(--light-blue);
+            color: #ffffff;
+            border-color: var(--light-blue);
+        }
+        
+        .btn-selector:hover:not(.active) {
+            background-color: #f1f5f9;
+        }
+
+        .btn-primary {
+            background-color: var(--light-blue);
+            border-color: var(--light-blue);
+            font-weight: 500;
+            padding: 0.75rem;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--deep-blue);
+            border-color: var(--deep-blue);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 0.25rem var(--light-blue-shadow);
+        }
+    </style>
+</head>
+<body class="p-3 p-sm-4">
+
+    <div class="main-container">
+        <!-- Logo -->
+        <div class="logo-container text-center">
+            <img src="data:image/png;base64,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" alt="Vuture Logo">
+        </div>
+
+        <!-- User Type Selection -->
+        <div class="text-center mb-4">
+            <div class="btn-group" role="group" aria-label="User type selection">
+                <button id="patientBtn" type="button" class="btn btn-selector px-4 py-2" onclick="showForm('patient')">Patient</button>
+                <button id="clinicBtn" type="button" class="btn btn-selector px-4 py-2" onclick="showForm('clinic')">Clinic</button>
+            </div>
+        </div>
+
+        <!-- Patient Form -->
+        <div id="patientForm" class="form-container d-none">
+            <h3 class="h4 text-center mb-4 fw-normal">Patient Information</h3>
+            <form novalidate>
+                <div class="mb-3">
+                    <label for="patientName" class="form-label fw-bold">Name</label>
+                    <input type="text" class="form-control" id="patientName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="whatsapp" class="form-label fw-bold">WhatsApp Number</label>
+                    <div class="input-group">
+                        <select class="form-select" style="max-width: 100px;">
+                            <option value="+20" selected>+20 EG</option>
+                            <option value="+966">+966 SA</option>
+                            <option value="+971">+971 AE</option>
+                            <option value="+1">+1 US</option>
+                            <option value="+44">+44 UK</option>
+                        </select>
+                        <input type="tel" class="form-control" id="whatsapp" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="patientEmail" class="form-label fw-bold">E-mail</label>
+                    <input type="email" class="form-control" id="patientEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="patientCategory" class="form-label fw-bold">Category</label>
+                    <select class="form-select" id="patientCategory" required onchange="handleCategoryChange()">
+                        <option value="" disabled selected>Select a category...</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Aesthetic Medicine">Aesthetic Medicine</option>
+                        <option value="Clinical Nutrition">Clinical Nutrition</option>
+                        <option value="Plastic Surgery">Plastic Surgery</option>
+                        <option value="Internal Medicine">Internal Medicine</option>
+                        <option value="Diabetology">Diabetology</option>
+                        <option value="Endocrinology">Endocrinology</option>
+                        <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                    </select>
+                </div>
+                <div id="categoryMessage" class="alert alert-info d-none">This clinic is opening soon</div>
+                <div class="mb-3" id="patientZoneWrapper">
+                    <label for="patientZone" class="form-label fw-bold">Zone</label>
+                    <select class="form-select" id="patientZone" required>
+                        <option value="" disabled selected>Select a zone...</option>
+                        <option value="New Cairo">New Cairo</option>
+                        <option value="Nasr City">Nasr City</option>
+                        <option value="October">October</option>
+                        <option value="Zayed">Zayed</option>
+                        <option value="Heliopolis">Heliopolis</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="callTime" class="form-label fw-bold">Preferred Time to Call (Optional)</label>
+                    <input type="time" class="form-control" id="callTime">
+                </div>
+                <div id="patientError" class="alert alert-danger mt-3 d-none"></div>
+                <div class="d-grid mt-4">
+                     <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Clinic Owner Form -->
+        <div id="clinicForm" class="form-container d-none">
+            <h3 class="h4 text-center mb-4 fw-normal">Clinic Information</h3>
+            <form novalidate>
+                <div class="mb-3">
+                    <label for="clinicName" class="form-label fw-bold">Clinic Name</label>
+                    <input type="text" class="form-control" id="clinicName" required>
+                </div>
+                 <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="clinicNumber" class="form-label fw-bold">Number</label>
+                        <div class="input-group">
+                             <select class="form-select" style="max-width: 100px;">
+                                <option value="+20" selected>+20 EG</option>
+                                <option value="+966">+966 SA</option>
+                                <option value="+971">+971 AE</option>
+                                <option value="+1">+1 US</option>
+                                <option value="+44">+44 UK</option>
+                            </select>
+                            <input type="tel" class="form-control" id="clinicNumber" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="clinicEmail" class="form-label fw-bold">E-mail</label>
+                        <input type="email" class="form-control" id="clinicEmail" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="clinicCategory" class="form-label fw-bold">Category of Clinic</label>
+                    <select class="form-select" id="clinicCategory" required onchange="handleClinicCategoryChange()">
+                        <option value="" disabled selected>Select a category...</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Aesthetic Medicine">Aesthetic Medicine</option>
+                        <option value="Clinical Nutrition">Clinical Nutrition</option>
+                        <option value="Plastic Surgery">Plastic Surgery</option>
+                        <option value="Internal Medicine">Internal Medicine</option>
+                        <option value="Diabetology">Diabetology</option>
+                        <option value="Endocrinology">Endocrinology</option>
+                        <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                        <option value="Multi-Specialty">Multi-Specialty</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3 d-none" id="otherCategoryWrapper">
+                    <label for="otherCategory" class="form-label fw-bold">Please Specify Category</label>
+                    <input type="text" class="form-control" id="otherCategory">
+                </div>
+                <div class="mb-3">
+                    <label for="clinicZone" class="form-label fw-bold">Clinic Zone</label>
+                    <input type="text" class="form-control" id="clinicZone" required placeholder="e.g., Maadi">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label fw-bold">Address</label>
+                    <textarea class="form-control" id="address" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="numDoctors" class="form-label fw-bold">Number of Doctors</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="numDoctors" min="0" value="0" placeholder="Enter number">
+                        <button class="btn btn-outline-secondary" type="button" onclick="generateDoctorFields()">Add Doctor Details</button>
+                    </div>
+                </div>
+
+                <!-- Container for dynamically generated doctor fields -->
+                <div id="doctorFieldsContainer" class="mt-4"></div>
+                
+                <div id="clinicError" class="alert alert-danger mt-3 d-none"></div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // --- DOM Element References ---
+        const patientForm = document.getElementById('patientForm');
+        const clinicForm = document.getElementById('clinicForm');
+        const patientBtn = document.getElementById('patientBtn');
+        const clinicBtn = document.getElementById('clinicBtn');
+        const doctorFieldsContainer = document.getElementById('doctorFieldsContainer');
+
+        /**
+         * Shows the selected form and hides the other using Bootstrap's display classes.
+         * @param {string} formType - The type of form to show ('patient' or 'clinic').
+         */
+        function showForm(formType) {
+            if (formType === 'patient') {
+                patientForm.classList.remove('d-none');
+                clinicForm.classList.add('d-none');
+                patientBtn.classList.add('active');
+                clinicBtn.classList.remove('active');
+            } else if (formType === 'clinic') {
+                clinicForm.classList.remove('d-none');
+                patientForm.classList.add('d-none');
+                clinicBtn.classList.add('active');
+                patientBtn.classList.remove('active');
+            }
+        }
+
+        /**
+         * Handles the logic for the patient category selection.
+         */
+        function handleCategoryChange() {
+            const categorySelect = document.getElementById('patientCategory');
+            const zoneWrapper = document.getElementById('patientZoneWrapper');
+            const zoneSelect = document.getElementById('patientZone');
+            const messageDiv = document.getElementById('categoryMessage');
+            
+            if (categorySelect.value && categorySelect.value !== 'Dermatology') {
+                zoneWrapper.classList.add('d-none');
+                zoneSelect.required = false;
+                messageDiv.classList.remove('d-none');
+            } else {
+                zoneWrapper.classList.remove('d-none');
+                zoneSelect.required = true;
+                messageDiv.classList.add('d-none');
+            }
+        }
+
+        /**
+         * Handles the logic for the clinic category selection.
+         */
+        function handleClinicCategoryChange() {
+            const categorySelect = document.getElementById('clinicCategory');
+            const otherWrapper = document.getElementById('otherCategoryWrapper');
+            const otherInput = document.getElementById('otherCategory');
+
+            if (categorySelect.value === 'Other') {
+                otherWrapper.classList.remove('d-none');
+                otherInput.required = true;
+            } else {
+                otherWrapper.classList.add('d-none');
+                otherInput.required = false;
+            }
+        }
+
+
+        /**
+         * Generates Bootstrap-styled input fields for doctor details.
+         */
+        function generateDoctorFields() {
+            const numDoctorsInput = document.getElementById('numDoctors');
+            const count = numDoctorsInput.value;
+            doctorFieldsContainer.innerHTML = '';
+            const num = parseInt(count, 10);
+            if (isNaN(num) || num <= 0) return;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'vstack gap-4 pt-4 border-top';
+            
+            for (let i = 1; i <= num; i++) {
+                const doctorDiv = document.createElement('div');
+                doctorDiv.className = 'p-3 border rounded bg-light';
+                
+                const title = document.createElement('h5');
+                title.className = 'mb-3 fw-normal';
+                title.textContent = `Doctor ${i}`;
+                doctorDiv.appendChild(title);
+
+                // Doctor Name
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'mb-3';
+                nameDiv.innerHTML = `
+                    <label for="doctor_name_${i}" class="form-label fw-bold">Doctor ${i}'s Name</label>
+                    <input type="text" name="doctor_name_${i}" id="doctor_name_${i}" class="form-control" required>
+                `;
+
+                // Doctor Number & Email in a row
+                const contactRow = document.createElement('div');
+                contactRow.className = 'row';
+                contactRow.innerHTML = `
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="doctor_number_${i}" class="form-label fw-bold">Doctor ${i}'s Number</label>
+                        <div class="input-group">
+                            <select class="form-select" style="max-width: 100px;">
+                                <option value="+20" selected>+20 EG</option>
+                                <option value="+966">+966 SA</option>
+                                <option value="+971">+971 AE</option>
+                                <option value="+1">+1 US</option>
+                                <option value="+44">+44 UK</option>
+                            </select>
+                            <input type="tel" name="doctor_number_${i}" id="doctor_number_${i}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="doctor_email_${i}" class="form-label fw-bold">Doctor ${i}'s Email</label>
+                        <input type="email" name="doctor_email_${i}" id="doctor_email_${i}" class="form-control" required>
+                    </div>
+                `;
+
+                doctorDiv.appendChild(nameDiv);
+                doctorDiv.appendChild(contactRow);
+                wrapper.appendChild(doctorDiv);
+            }
+            doctorFieldsContainer.appendChild(wrapper);
+        }
+
+        // --- Form Validation ---
+        
+        // Add submit listener for the patient form
+        patientForm.querySelector('form').addEventListener('submit', function(event) {
+            const emailInput = document.getElementById('patientEmail');
+            const errorDiv = document.getElementById('patientError');
+            
+            // Hide error on new submission attempt
+            errorDiv.classList.add('d-none');
+
+            // Check if email contains '@'
+            if (!emailInput.value.includes('@')) {
+                event.preventDefault(); // Stop form from submitting
+                errorDiv.textContent = 'Please enter a valid email address.';
+                errorDiv.classList.remove('d-none');
+            }
+        });
+
+        // Add submit listener for the clinic form
+        clinicForm.querySelector('form').addEventListener('submit', function(event) {
+            const errorDiv = document.getElementById('clinicError');
+            errorDiv.classList.add('d-none'); // Hide error on new submission attempt
+            let allEmailsValid = true;
+
+            // Check clinic's own email
+            const clinicEmailInput = document.getElementById('clinicEmail');
+            if (!clinicEmailInput.value.includes('@')) {
+                allEmailsValid = false;
+            }
+
+            // Check all dynamically generated doctor emails
+            const doctorEmailInputs = clinicForm.querySelectorAll('input[name^="doctor_email_"]');
+            doctorEmailInputs.forEach(input => {
+                if (!input.value.includes('@')) {
+                    allEmailsValid = false;
+                }
+            });
+
+            if (!allEmailsValid) {
+                event.preventDefault(); // Stop form from submitting
+                errorDiv.textContent = 'Please ensure all email addresses are valid (must contain "@").';
+                errorDiv.classList.remove('d-none');
+            }
+        });
+
+    </script>
+
+</body>
+</html>
