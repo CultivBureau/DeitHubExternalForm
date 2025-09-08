@@ -10,6 +10,9 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    
 </head>
 
 <body>
@@ -21,14 +24,24 @@
                     alt="Sales Form Logo" class="mb-3 rounded-3" style="height: 96px;">
                 <h1 class="h3 fw-bold">Sales Form</h1>
             </div>
-            <div class="col-auto">
-                <label for="phone" class="form-label">Phone</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light text-dark">+20</span>
-                    <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10" minlength="10" required
-                        placeholder="10 digits" class="form-control">
-                    <div id="contactCheckResult"></div>
-                    <div id="dealCheckResult"></div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone</label>
+                    <div class="input-group">
+                        <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10" minlength="10" required
+                            placeholder="10 digits" class="form-control">
+                        <div id="contactCheckResult"></div>
+                        <div id="dealCheckResult"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone2" class="form-label">Phone 2 <span class="text-muted small">(optional)</span></label>
+                    <div class="input-group">
+                        <input type="text" id="phone2" name="phone2" pattern="\d{10}" maxlength="10" minlength="10"
+                            placeholder="10 digits" class="form-control">
+                        <div id="contactCheckResult2"></div>
+                        <div id="dealCheckResult2"></div>
+                    </div>
                 </div>
             </div>
             <div class="row g-3 mb-3">
