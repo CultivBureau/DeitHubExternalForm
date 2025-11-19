@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
   let contactId = null;
   let dealId = null;
   let archivedDeals = [];
+  let stageMeta = {};
+  let categoryMeta = {};
+  let stageMetaPromise = null;
+  let categoryMetaPromise = null;
 
   const iti = window.intlTelInput(phoneInput, {
     initialCountry: "eg",
@@ -80,6 +84,66 @@ document.addEventListener('DOMContentLoaded', function () {
     archivedDeals = [];
   }
 
+  async function ensureStageMeta() {
+    if (Object.keys(stageMeta).length) return stageMeta;
+    if (!stageMetaPromise) {
+      stageMetaPromise = fetch(`${domain}/crm.status.list.json?ENTITY_ID=DEAL_STAGE`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error_description || "Failed to load stage metadata");
+          stageMeta = {};
+          (data.result || []).forEach((stage) => {
+            stageMeta[stage.STATUS_ID] = stage;
+          });
+          return stageMeta;
+        })
+        .catch((err) => {
+          console.error("Failed to fetch stage metadata:", err);
+          stageMetaPromise = null;
+          throw err;
+        });
+    }
+    return stageMetaPromise;
+  }
+
+  async function ensureCategoryMeta() {
+    if (Object.keys(categoryMeta).length) return categoryMeta;
+    if (!categoryMetaPromise) {
+      categoryMetaPromise = fetch(`${domain}/crm.dealcategory.list.json`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) throw new Error(data.error_description || "Failed to load category metadata");
+          categoryMeta = {};
+          (data.result || []).forEach((category) => {
+            categoryMeta[String(category.ID)] = category;
+          });
+          return categoryMeta;
+        })
+        .catch((err) => {
+          console.error("Failed to fetch category metadata:", err);
+          categoryMetaPromise = null;
+          throw err;
+        });
+    }
+    return categoryMetaPromise;
+  }
+
+  async function getDealLocation(stageId, categoryId) {
+    try {
+      await Promise.all([ensureStageMeta(), ensureCategoryMeta()]);
+    } catch (err) {
+      // Already logged in the ensure functions
+    }
+
+    const stage = stageMeta[stageId] || null;
+    const category = categoryMeta[String(categoryId)] || null;
+
+    return {
+      stageName: stage?.NAME || stageId || "Unknown stage",
+      pipelineName: category?.NAME || (categoryId ? `Pipeline ${categoryId}` : "Unknown pipeline"),
+    };
+  }
+
   // ✅ Realtime Contact & Deal Check for Phone2
   const checkPhone2 = debounce(async () => {
     const rawPhone = phone2Input.value;
@@ -137,7 +201,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const validDeal = deals.find(d => !invalidStages.includes(d.STAGE_ID));
 
       if (contactId2 && validDeal) {
-        message2.textContent = `⚠️ Contact exists (ID: ${contactId2}) with active deal (ID: ${validDeal.ID}).`;
+        const location = await getDealLocation(validDeal?.STAGE_ID, validDeal?.CATEGORY_ID);
+        message2.textContent = `⚠️ Contact exists (ID: ${contactId2}) with active deal (ID: ${validDeal.ID}) in pipeline "${location.pipelineName}" at stage "${location.stageName}".`;
         message2.style.color = "red";
       } else if (contactId2 && archivedDeals2.length > 0) {
         message2.textContent = `🔄 Contact exists (ID: ${contactId2}). ${archivedDeals2.length} archived deal(s).`;
@@ -218,7 +283,8 @@ document.addEventListener('DOMContentLoaded', function () {
       dealId = validDeal?.ID || null;
 
       if (contactId && dealId) {
-        message.textContent = `⚠️ Contact exists (ID: ${contactId}) with active deal (ID: ${dealId}). Cannot submit.`;
+        const location = await getDealLocation(validDeal?.STAGE_ID, validDeal?.CATEGORY_ID);
+        message.textContent = `⚠️ Contact exists (ID: ${contactId}) with active deal (ID: ${dealId}) in pipeline "${location.pipelineName}" at stage "${location.stageName}". Cannot submit.`;
         message.style.color = "red";
         submitBtn.disabled = true;
       } else if (contactId && archivedDeals.length > 0) {
@@ -301,12 +367,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const comment = document.querySelector("#comment").value;
     const bookingDate = document.querySelector("#booking-date").value;
     const bookingTime = document.querySelector("#booking-time").value;
-    const dealType = document.querySelector("input[name='deal-type']:checked")?.value;
+    const selectedDealTypeInput = document.querySelector("input[name='deal-type']:checked");
+    const dealType = selectedDealTypeInput?.value;
     const responsibleId = document.querySelector("#responsibleId").value;
     const datetime = `${bookingDate} ${bookingTime}`;
+    const stageId = selectedDealTypeInput?.dataset.stage || null;
+    const categoryId = selectedDealTypeInput?.dataset.category || null;
+
+    console.log("Form submission payload:", {
+      firstName,
+      lastName,
+      source,
+      comment,
+      bookingDate,
+      bookingTime,
+      dealType,
+      responsibleId,
+      datetime,
+      stageId,
+      categoryId,
+      contactId,
+      dealId,
+      archivedDealsCount: archivedDeals.length,
+    });
 
     if (!firstName || !bookingDate || !bookingTime || !source || !dealType || !responsibleId) {
       alert("All fields are required.");
+      return;
+    }
+
+    if (!stageId || !categoryId) {
+      showToast("❌ Missing stage configuration for selected deal type.", false);
       return;
     }
 
@@ -349,13 +440,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (archivedDeals.length > 0) {
         let updatedCount = 0;
+
         for (const deal of archivedDeals) {
-          const stageId = dealType === "clinic" ? "FINAL_INVOICE" : "UC_3QISCC";
           
           const updateRes = await axios.post(`${domain}/crm.deal.update.json`, {
             id: deal.ID,
             fields: {
               STAGE_ID: stageId,
+              CATEGORY_ID: Number(categoryId),
               UF_CRM_1713837376304: datetime,
               UF_CRM_1719774458545: dealType,
               SOURCE_ID: source,
@@ -383,12 +475,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       // ✅ If no archived deals, create new one
-      const stageId = dealType === "clinic" ? "FINAL_INVOICE" : "UC_3QISCC";
       const dealRes = await axios.post(`${domain}/crm.deal.add.json`, {
         fields: {
           TITLE: `New ${dealType} deal for ${formattedPhone}`,
           CONTACT_ID: contactId,
-          CATEGORY_ID: 0,
+          CATEGORY_ID: Number(categoryId),
           STAGE_ID: stageId,
           SOURCE_ID: source,
           UF_CRM_1713837376304: datetime,
